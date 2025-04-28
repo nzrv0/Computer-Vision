@@ -4,7 +4,13 @@ import matplotlib.pyplot as plt
 
 class NeuralNetwork:
     def __init__(
-        self, inputs, outputs, epochs=100, seed=0, activation=None, learning_rate=0.001
+        self,
+        inputs,
+        outputs,
+        epochs=10000,
+        seed=0,
+        activation=None,
+        learning_rate=0.001,
     ):
         self.inputs = inputs
         self.outputs = outputs
@@ -77,7 +83,7 @@ class NeuralNetwork:
             self.hidden_w[i, :] = (
                 (self.hidden_w[i, :]).ravel() - (loss * self.learning_rate).ravel()
             )
-        return loss.ravel()
+        return loss[0]
 
 
 inputs = np.random.rand(10_000, 1)
@@ -86,4 +92,6 @@ outputs = np.array([[0]])
 neural_net = NeuralNetwork(inputs, outputs)
 neural_net.load_weights()
 res = neural_net.train()
+plt.plot(res)
+plt.show()
 # 4x4 X 4x1
