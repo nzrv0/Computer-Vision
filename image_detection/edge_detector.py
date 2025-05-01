@@ -79,7 +79,6 @@ def make_points(image, average):
 def display_lines(image, lines):
     lines_image = np.zeros_like(image)
     if lines is not None:
-        print(lines)
         for line in lines:
             x1, y1, x2, y2 = line[0]
             cv.line(lines_image, (x1, y1), (x2, y2), (255, 0, 0), 10)
