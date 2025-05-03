@@ -29,25 +29,41 @@ def parse_json():
 def change_perspective(image):
     rows, cols, chn = image.shape
     size_rows = rows / 2
-    gap = 90
+    gap = 60
     other_gap = 200
-    pts1 = np.float32(
-        [
-            [cols / 2 - gap, size_rows + gap],
-            [cols / 2 + gap, size_rows + gap],
-            [other_gap, rows],
-            [cols - other_gap, rows],
-        ]
+    # pts1 = np.float32(
+    #     [
+    #         [cols / 2 - gap, 0],
+    #         [cols / 2 + gap, 0],
+    #         [0, rows],
+    #         [cols, rows],
+    #     ]
+    # )
+    pts = np.array([[cols / 2 - gap, 0], [cols / 2 + gap, 0], [0, rows], [cols, rows]])
+    rect = np.zeros((4, 2), dtype="float32")
+    s = pts.sum(axis=1)
+    rect[0] = pts[np.argmin(s)]
+    rect[2] = pts[np.argmax(s)]
+
+    diff = np.diff(pts, axis=1)
+    rect[1] = pts[np.argmin(diff)]
+    rect[3] = pts[np.argmax(diff)]
+
+    pts2 = np.float32([[0, 0], [cols, 0], [cols, rows], [0, rows]])
+    M = cv.getPerspectiveTransform(rect, pts2)
+    dst = cv.warpPerspective(
+        image,
+        M,
+        (cols, rows),
+        flags=cv.WARP_INVERSE_MAP | cv.INTER_LINEAR | cv.WARP_FILL_OUTLIERS,
     )
-    pts2 = np.float32([[0, 0], [cols, 0], [0, rows], [cols, rows]])
-    M = cv.getPerspectiveTransform(pts1, pts2)
-    dst = cv.warpPerspective(image, M, (cols, rows))
+
     return dst
 
 
 def get_image():
     path = get_path("images")
-    image = path / "image copy 2.png"
+    image = path / "155362930437411700.jpg"
     image = cv.imread(image)
     return image
 
